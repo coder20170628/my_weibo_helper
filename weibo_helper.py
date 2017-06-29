@@ -8,6 +8,7 @@ import sys
 import io
 import time
 import winsound
+import random
 
 reload(sys)
 sys.setdefaultencoding("utf-8")
@@ -32,13 +33,16 @@ APPKEY = ""
 APPSECRETE = ""
 #用户授权的code
 CODE = ""
-REDIRECTURI = "http://www.baidu.com"
+REDIRECTURI = ""
 #使用authorized方法打印出的ACCESSTOKEN
 ACCESSTOKEN = ""
 
 #杜冥鸦的微博id
 UID = "1736665660"
 NICKNAME = "杜冥鸦"
+
+#是否程序是第一次启动
+first = True
 
 content_dict = dict()
 
@@ -73,13 +77,32 @@ def get_new_info():
     content = urllib.urlopen(cururl).read()
     return json.loads(content)
 
+def leave_comment(itemid):
+    '''发布留言评论'''
+    comment_list = ["爱你，么么哒","你永远是我心中的小仙女","永远支持你","爱你，比个heart"]
+    #随机一条评论
+    curcomment = "我是程序员的小跟班，替主人对你说："+comment_list[random.randint(0,len(comment_list)-1)]
+    cururl = "https://api.weibo.com/2/comments/create.json"
+    datas = {
+        "access_token": ACCESSTOKEN,
+        "comment": curcomment,
+        "id": str(itemid)
+    }
+    post_data(cururl, datas)
+    print "替主人给最爱的 ",NICKNAME," 留了一条评论，内容为："
+    print curcomment
+
 def read_new_content():
     '''读取最新的微博内容'''
+    global first
+    
     content = get_new_info()
     has_new = False
+    index = -1
     for item in content["statuses"]:
         if str(item["user"]["id"]) == UID:
             if item["id"] not in content_dict.keys():
+                index = index + 1
                 has_new = True
                 print "你最爱的 ",NICKNAME," 于 ",str(item["created_at"])," 发布了新微博："
                 print
@@ -88,8 +111,11 @@ def read_new_content():
                     "date":str(item["created_at"]),
                     "text:":str(item["text"]).decode("utf-8")
                 }
+                if (first and index == 0) or not first:
+                    leave_comment(item["id"])
                 print "**********************************************"
                 print
+    first = False
     return has_new
 
 def run():
