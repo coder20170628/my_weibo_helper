@@ -37,9 +37,9 @@ REDIRECTURI = ""
 #使用authorized方法打印出的ACCESSTOKEN
 ACCESSTOKEN = ""
 
-#杜冥鸦的微博id
-UID = "1736665660"
-NICKNAME = "杜冥鸦"
+#微博id
+UID = ""
+NICKNAME = ""
 
 #是否程序是第一次启动
 first = True
@@ -81,7 +81,7 @@ def leave_comment(itemid):
     '''发布留言评论'''
     comment_list = ["爱你，么么哒","你永远是我心中的小仙女","永远支持你","爱你，比个heart"]
     #随机一条评论
-    curcomment = "我是程序员的小跟班，替主人对你说："+comment_list[random.randint(0,len(comment_list)-1)]
+    curcomment = "替主人对你说："+comment_list[random.randint(0,len(comment_list)-1)]
     cururl = "https://api.weibo.com/2/comments/create.json"
     datas = {
         "access_token": ACCESSTOKEN,
